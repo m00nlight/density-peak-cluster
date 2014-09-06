@@ -53,5 +53,5 @@ to [paper](paper) itself.
 This is an open source software distributed under the BSD license.
 
 
-[cran] : http://cran.r-project.org/
+[cran]: http://cran.r-project.org/
 [paper]: http://www.sciencemag.org/content/344/6191/1492.abstract
