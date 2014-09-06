@@ -9,12 +9,12 @@ First, you need to install R programming environment. Follow the
 instruction of the offical [site](cran).
 
 Then, in the project directory, you can type R to start an R 
-interpreter. type in the following command to load the program.
+interpreter. Type in the following command to load the program.
 ```
 > source("./density-peak-cluster.r")
 ```
 
-In the *dataset-test* directory, there is some data sets to 
+In the *dataset-test* directory, there are some data sets to 
 use. You can just use the `run` function to experiment. For
 example the following command will use the `spirtal.txt`
 dataset.
@@ -41,12 +41,12 @@ r15 result
 aggregation result
 ![aggregation](./pic/aggregation.png)
 
-For some test, it try to combine to weakly connect component
+For some tests, it try to combine to weakly connect components
 in the dataset. I will try to find better way to solve the
-problem. Any suggestion or improvement of the code is welcome.
+problem. Any suggestion or improvement of the code are welcome.
 
-For more details about the algorithm, please refer
-to [paper](paper) itself.
+For more details about the algorithm, please refer to [paper](paper)
+itself.
 
 ## License
 
