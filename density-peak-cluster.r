@@ -6,7 +6,7 @@ color_table = c("black", "pink", "green", "yellow", "blue", "red",
                 "midnightblue")
 
 dis <- function(p1, p2) { 
-  sqrt((p1[[1]] - p2[[1]])^2 + (p1[[2]] - p2[[2]])^2) 
+  sqrt(sum(mapply(FUN = function (x, y) (x - y)^2, p1, p2)))
 }
 
 build_dis_matrix <- function(points) {
@@ -67,7 +67,7 @@ find_density_cluster_center <- function (d_and_d) {
   ret
 }
 
-clustering_centers <- function(points, dist, centers, thresh) {
+clustering_centers <- function(dist, centers, thresh) {
   sz = length(centers);
   ret = rep(0, sz)
   curr = 2;
@@ -106,7 +106,7 @@ density_peak_cluster <- function(datas) {
   d_and_d = calc_density_delta(distances, thresh)
   density = d_and_d$density; delta = d_and_d$delta
   center = find_density_cluster_center(d_and_d)
-  center_type = clustering_centers(points, distances, center, thresh)
+  center_type = clustering_centers(distances, center, thresh)
   ret = rep(1, sz)
   set = rep(FALSE, sz)
   
@@ -153,7 +153,7 @@ density_peak_cluster <- function(datas) {
   ret[outliers] = 1
   
   # combine near cluster
-  combin_cluster <- function() {
+  combine_cluster <- function() {
     for(i in 1:sz) {
       dist = 10e6; idx = -1;
       for(j in 1:sz) {
@@ -178,7 +178,7 @@ density_peak_cluster <- function(datas) {
   # plot out the result
   layout(matrix(c(1,2,1,3), 2, 2, byrow = TRUE)) 
   plot(delta ~ density, col=scatter_ret, main = "density and delta scatter")
-  ret = combin_cluster()
+  ret = combine_cluster()
   ret = sapply(ret, function(x) color_table[x])
   plot(points, col=datas[,3], main = "gold standard")
   plot(points, col=ret, main = "density peak cluster result")
