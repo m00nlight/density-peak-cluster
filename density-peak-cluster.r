@@ -1,9 +1,8 @@
 # color table for good cluster visualization
-color_table = c("black", "pink", "green", "yellow", "blue", "red", 
-                "gray", "brown","cyan", "palegreen", "yellowgreen", 
-                "violetred4", "thistle", "paleturquoise", "lightyellow",
-                "aliceblue", "aquamarine1", "darkgoldenrod", "dimgray",
-                "midnightblue")
+color_table = c("black", "red", "blue", "green", "yellow", "purple",
+                "orange", "cyan", "brown", "darkgreen", "lightblue",
+                "slateblue", "wheat", "yellow3", "grey", "navy", "magenta",
+                "aquamarine1", "deeppink4", "gold4")
 
 dis <- function(p1, p2) { 
   sqrt(sum(mapply(FUN = function (x, y) (x - y)^2, p1, p2)))
@@ -98,6 +97,9 @@ clustering_centers <- function(dist, centers, thresh) {
   ret
 }
 
+# return a vector of the same length of datas rows, each with 
+# a number indicate the cluster the datas[i, ] belongs to, 
+# Notice: 1 in the result means outlier
 density_peak_cluster <- function(datas) {
   points = datas[,1:2]
   sz = nrow(points)
@@ -109,6 +111,7 @@ density_peak_cluster <- function(datas) {
   center_type = clustering_centers(distances, center, thresh)
   ret = rep(1, sz)
   set = rep(FALSE, sz)
+  combine_zoom_factor = 1.2 # parameter for combine clusters
   
   for(i in 1:length(center)) ret[center[i]] = center_type[i]
   scatter_ret = ret
@@ -151,7 +154,6 @@ density_peak_cluster <- function(datas) {
   outliers = sapply(1:sz, function(idx) 
       density[idx] <= density_thresh && delta[idx] >= delta_thresh)
   ret[outliers] = 1
-  
   # combine near cluster
   combine_cluster <- function() {
     for(i in 1:sz) {
@@ -162,12 +164,11 @@ density_peak_cluster <- function(datas) {
           idx = j
         }
       }
-      if(dist <= thresh ) {
+      if(dist <= thresh * combine_zoom_factor ) {
         cnt1 = length(distances[i, distances[i,] <= thresh & ret == ret[i]])
         cnt2 = length(distances[idx, distances[idx,] <= thresh & 
                                   ret == ret[idx]])
-        if(cnt1 >= density_thresh_mean * 0.6 && 
-             cnt2 >= density_thresh_mean * 0.6){
+        if(cnt1 +cnt2 >= density_thresh_mean * combine_zoom_factor){
           ret[ret == ret[i]] = ret[idx]
         }
       }
@@ -175,14 +176,19 @@ density_peak_cluster <- function(datas) {
     ret
   }
   
-  # plot out the result
-  layout(matrix(c(1,2,1,3), 2, 2, byrow = TRUE)) 
-  plot(delta ~ density, col=scatter_ret, main = "density and delta scatter")
-  ret = combine_cluster()
-  ret = sapply(ret, function(x) color_table[x])
-  plot(points, col=datas[,3], main = "gold standard")
-  plot(points, col=ret, main = "density peak cluster result")
+  if(length(datas) <= 3) {
+    ret = combine_cluster()
+    d_col = sapply(ret, function(x) color_table[x])
+    result_plot(delta, density, scatter_ret, points, datas[,3], d_col)
+  }
   ret
+}
+
+result_plot <- function(delta, density, col_center, points, col1, col2) {
+  layout(matrix(c(1,2,1,3),2, 2, byrow = TRUE))
+  plot(delta ~ density, col = col_center, main = "density and delta scatter")
+  plot(points, col = col1, main = "gold standard")
+  plot(points, col = col2, main = "density peak cluster result")
 }
 
 run <- function(fname) {
